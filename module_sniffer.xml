@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_sniffer" default="compile.module.sniffer">
+  <dirname property="module.sniffer.basedir" file="${ant.file.module_sniffer}"/>
+  
+  <property name="module.jdk.home.sniffer" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.sniffer" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.sniffer" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.sniffer" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="sniffer.output.dir" value="${module.sniffer.basedir}/target/classes"/>
+  <property name="sniffer.testoutput.dir" value="${module.sniffer.basedir}/target/test-classes"/>
+  
+  <path id="sniffer.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="sniffer.module.production.classpath">
+    <path refid="${module.jdk.classpath.sniffer}"/>
+    <path refid="library.maven:_org.pcap4j:pcap4j-core:2.0.0-alpha.classpath"/>
+    <path refid="library.maven:_net.java.dev.jna:jna:4.2.1.classpath"/>
+    <path refid="library.maven:_org.pcap4j:pcap4j-packetfactory-static:2.0.0-alpha.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.2.classpath"/>
+  </path>
+  
+  <path id="sniffer.runtime.production.module.classpath">
+    <pathelement location="${sniffer.output.dir}"/>
+    <path refid="library.maven:_org.pcap4j:pcap4j-core:2.0.0-alpha.classpath"/>
+    <path refid="library.maven:_net.java.dev.jna:jna:4.2.1.classpath"/>
+    <path refid="library.maven:_org.pcap4j:pcap4j-packetfactory-static:2.0.0-alpha.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:jcl-over-slf4j:1.5.8.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-log4j12:1.2.classpath"/>
+    <path refid="library.maven:_log4j:log4j:1.2.14.classpath"/>
+  </path>
+  
+  <path id="sniffer.module.classpath">
+    <path refid="${module.jdk.classpath.sniffer}"/>
+    <pathelement location="${sniffer.output.dir}"/>
+    <path refid="library.maven:_org.pcap4j:pcap4j-core:2.0.0-alpha.classpath"/>
+    <path refid="library.maven:_net.java.dev.jna:jna:4.2.1.classpath"/>
+    <path refid="library.maven:_org.pcap4j:pcap4j-packetfactory-static:2.0.0-alpha.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:jcl-over-slf4j:1.5.8.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-log4j12:1.2.classpath"/>
+    <path refid="library.maven:_log4j:log4j:1.2.14.classpath"/>
+  </path>
+  
+  <path id="sniffer.runtime.module.classpath">
+    <pathelement location="${sniffer.testoutput.dir}"/>
+    <pathelement location="${sniffer.output.dir}"/>
+    <path refid="library.maven:_org.pcap4j:pcap4j-core:2.0.0-alpha.classpath"/>
+    <path refid="library.maven:_net.java.dev.jna:jna:4.2.1.classpath"/>
+    <path refid="library.maven:_org.pcap4j:pcap4j-packetfactory-static:2.0.0-alpha.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-api:1.2.classpath"/>
+    <path refid="library.maven:_org.slf4j:jcl-over-slf4j:1.5.8.classpath"/>
+    <path refid="library.maven:_org.slf4j:slf4j-log4j12:1.2.classpath"/>
+    <path refid="library.maven:_log4j:log4j:1.2.14.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.sniffer">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.sniffer">
+    <patternset refid="excluded.from.module.sniffer"/>
+  </patternset>
+  
+  <path id="sniffer.module.sourcepath">
+    <dirset dir="${module.sniffer.basedir}">
+      <include name="src/main/java"/>
+      <include name="src/main/resources"/>
+    </dirset>
+  </path>
+  
+  <path id="sniffer.module.test.sourcepath">
+    <dirset dir="${module.sniffer.basedir}">
+      <include name="src/test/java"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.sniffer" depends="compile.module.sniffer.production,compile.module.sniffer.tests" description="Compile module sniffer"/>
+  
+  <target name="compile.module.sniffer.production" depends="register.custom.compilers" description="Compile module sniffer; production classes">
+    <mkdir dir="${sniffer.output.dir}"/>
+    <javac2 destdir="${sniffer.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.sniffer}/javac">
+      <compilerarg line="${compiler.args.sniffer}"/>
+      <bootclasspath refid="sniffer.module.bootclasspath"/>
+      <classpath refid="sniffer.module.production.classpath"/>
+      <src refid="sniffer.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.sniffer"/>
+    </javac2>
+    
+    <copy todir="${sniffer.output.dir}">
+      <fileset dir="${module.sniffer.basedir}/src/main/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+      <fileset dir="${module.sniffer.basedir}/src/main/resources">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.sniffer.tests" depends="register.custom.compilers,compile.module.sniffer.production" description="compile module sniffer; test classes" unless="skip.tests">
+    <mkdir dir="${sniffer.testoutput.dir}"/>
+    <javac2 destdir="${sniffer.testoutput.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.sniffer}/javac">
+      <compilerarg line="${compiler.args.sniffer}"/>
+      <bootclasspath refid="sniffer.module.bootclasspath"/>
+      <classpath refid="sniffer.module.classpath"/>
+      <src refid="sniffer.module.test.sourcepath"/>
+      <patternset refid="excluded.from.compilation.sniffer"/>
+    </javac2>
+    
+    <copy todir="${sniffer.testoutput.dir}">
+      <fileset dir="${module.sniffer.basedir}/src/test/java">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="clean.module.sniffer" description="cleanup module">
+    <delete dir="${sniffer.output.dir}"/>
+    <delete dir="${sniffer.testoutput.dir}"/>
+  </target>
+</project>
